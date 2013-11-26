@@ -1,0 +1,19 @@
+{
+    "name": "heystack/ecommerce-giftwrapping",
+    "type": "silverstripe-module",
+    "require": {
+        "php": ">=5.4.0",
+        "composer/installers": "~1.0.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Heystack": "code/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev",
+            "dev-1.0": "1.0.x-dev"
+        }
+    }
+}

@@ -1,0 +1,22 @@
+parameters:
+  
+services:
+  gift_wrapping_hanlder:
+    class: Heystack\Subsystem\GiftWrapping\GiftWrappingHandler
+    arguments: [  @state ]
+    tags:
+      - { name: ss_orm_backend.data_provider }
+      - { name: transaction.modifier }
+      
+  gift_wrapping_transaction_schema:
+    class: %yaml_data_object_schema.class%
+    arguments: [ ecommerce-giftwrapping/config/storage/gift_wrapping_transaction.yml, @state_global ]
+    tags:
+      - { name: dataobject_generator.schema }
+      
+  gift_wrapping_schema:
+    class: %yaml_data_object_schema.class%
+    arguments: [ ecommerce-giftwrapping/config/storage/gift_wrapping.yml, @state_global ]
+    tags:
+      - { name: dataobject_generator.schema, reference: true }
+      

@@ -1,0 +1,3 @@
+<?php
+
+define('ECOMMERCE_GIFT_WRAPPING_BASE_PATH', __DIR__);
