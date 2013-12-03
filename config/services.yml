@@ -1,9 +1,9 @@
 parameters:
   
 services:
-  gift_wrapping_hanlder:
+  gift_wrapping_handler:
     class: Heystack\Subsystem\GiftWrapping\GiftWrappingHandler
-    arguments: [  @state ]
+    arguments: [ 5, @state ]
     tags:
       - { name: ss_orm_backend.data_provider }
       - { name: transaction.modifier }

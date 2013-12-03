@@ -13,5 +13,5 @@ namespace Heystack\Subsystem\GiftWrapping;
  */
 final class Services
 {
-    const GIFT_WRAPPING_HANDLER = 'gift_wrapping_hanlder';
+    const GIFT_WRAPPING_HANDLER = 'gift_wrapping_handler';
 }
