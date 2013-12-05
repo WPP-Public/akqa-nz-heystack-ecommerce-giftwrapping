@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Heystack\Subsystem\GiftWrapping\Services;
 
 /**
  *
@@ -54,6 +55,15 @@ class ContainerExtension implements ExtensionInterface
      */
     protected function processConfig(array $config, ContainerBuilder $container)
     {
+        $config = array_pop($config);
+
+        if (isset($config['config']) &&  $container->hasDefinition(Services::GIFT_WRAPPING_HANDLER)) {
+
+            $container->getDefinition(Services::GIFT_WRAPPING_HANDLER)->addMethodCall('setConfig', array($config['config']));
+
+        } else {
+            throw new ConfigurationException('Please configure the gift wrapping subsystem on your /mysite/config/services.yml file');
+        }
     }
 
     /**

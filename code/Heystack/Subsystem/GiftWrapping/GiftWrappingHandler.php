@@ -3,69 +3,57 @@
 namespace Heystack\Subsystem\GiftWrapping;
 
 use Heystack\Subsystem\Core\Identifier\Identifier;
+use Heystack\Subsystem\Core\Interfaces\HasDataInterface;
+use Heystack\Subsystem\Core\Interfaces\HasStateServiceInterface;
 use Heystack\Subsystem\Core\State\State;
 use Heystack\Subsystem\Core\Storage\StorableInterface;
-use Heystack\Subsystem\Core\ViewableData\ViewableDataInterface;
+use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
+use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
+use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class GiftWrappingHandler implements TransactionModifierInterface, ViewableDataInterface, StorableInterface
+class GiftWrappingHandler implements TransactionModifierInterface, StorableInterface, \Serializable, HasStateServiceInterface, HasDataInterface
 {
-    const IDENTIFIER = 'gift-wrapping';
+    use TransactionModifierStateTrait;
+    use TransactionModifierSerializeTrait;
+
+    const IDENTIFIER = 'gift-wrapping-handler';
+    const TOTAL_KEY = 'total';
+    const ACTIVE_KEY = 'active';
+    const CONFIG_KEY = 'config';
 
     /**
      * @var State
      */
     protected $stateService;
-
-    protected $total;
+    protected $eventService;
+    protected $currencyService;
+    protected $data;
 
     /**
      * @param $total
      * @param State $stateService
      */
-    public function __construct($total, State $stateService)
+    public function __construct(State $stateService, EventDispatcherInterface $eventService, CurrencyServiceInterface $currencyService)
     {
-        $this->total = $total;
         $this->stateService = $stateService;
+        $this->eventService = $eventService;
+        $this->currencyService = $currencyService;
     }
 
-    /**
-     * Defines what methods the implementing class implements dynamically through __get and __set
-     */
-    public function getDynamicMethods()
+    public function setActive($active)
     {
-        return array(
-            'getTotal',
-            'isActive'
-        );
-    }
+        $this->data[self::ACTIVE_KEY] = (bool) $active;
 
-    /**
-     * Returns an array of SilverStripe DBField castings keyed by field name
-     */
-    public function getCastings()
-    {
-        return array(
-            'getTotal' => 'Money',
-            'isActive' => 'Boolean'
-        );
-    }
-
-    public function setValue($value)
-    {
-        $this->total = $value;
-    }
-
-    public function getValue()
-    {
-        return $this->total;
+        $this->updateTotal();
     }
 
     public function isActive()
     {
-        return $this->stateService->getByKey(self::IDENTIFIER);
+        return isset($this->data[self::ACTIVE_KEY]) ? $this->data[self::ACTIVE_KEY] : false;
     }
 
     /**
@@ -82,11 +70,32 @@ class GiftWrappingHandler implements TransactionModifierInterface, ViewableDataI
      */
     public function getTotal()
     {
+        return isset($this->data[self::TOTAL_KEY]) ? $this->data[self::TOTAL_KEY] : 0;
+    }
+
+    public function updateTotal()
+    {
+        $total = 0;
+
         if ($this->isActive()) {
-            return $this->total;
-        } else {
-            return 0;
+
+            $total = $this->getCost();
+
         }
+
+        $this->data[self::TOTAL_KEY] = $total;
+
+        $this->saveState();
+
+        $this->eventService->dispatch(Events::TOTAL_UPDATED);
+
+    }
+
+    public function getCost()
+    {
+        $currencyCode = $this->currencyService->getActiveCurrencyCode();
+
+        return isset($this->data[self::CONFIG_KEY][$currencyCode]) ? $this->data[self::CONFIG_KEY][$currencyCode] : 0;
     }
 
     /**
@@ -136,6 +145,46 @@ class GiftWrappingHandler implements TransactionModifierInterface, ViewableDataI
     public function getSchemaName()
     {
         return 'GiftWrapping';
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData($data)
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param HasStateServiceInterface $eventService
+     * @return mixed
+     */
+    public function setStateService(State $stateService)
+    {
+        $this->stateService = $stateService;
+    }
+
+    public function getStateService()
+    {
+        return $this->stateService;
+    }
+
+    public function setConfig(array $config)
+    {
+        $this->data[self::CONFIG_KEY] = $config;
+    }
+
+    public function getConfig()
+    {
+        return isset($this->data[self::CONFIG_KEY]) ? $this->data[self::CONFIG_KEY] : null;
     }
 
 
