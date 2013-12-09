@@ -26,6 +26,7 @@ class ContainerConfig implements ConfigurationInterface
                     ->prototype('array')
                         ->children()
                             ->scalarNode('code')->isRequired()->end()
+                            ->scalarNode('message')->defaultValue('')->end()
                             ->floatNode('price')->defaultValue(0)->end()
                         ->end()
                     ->end()

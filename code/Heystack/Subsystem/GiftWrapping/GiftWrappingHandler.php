@@ -95,7 +95,14 @@ class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInter
     {
         $currencyCode = $this->currencyService->getActiveCurrencyCode();
 
-        return isset($this->data[self::CONFIG_KEY][$currencyCode]) ? $this->data[self::CONFIG_KEY][$currencyCode] : 0;
+        return isset($this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_PRICE_KEY]) ? $this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_PRICE_KEY] : 0;
+    }
+
+    public function getMessage()
+    {
+        $currencyCode = $this->currencyService->getActiveCurrencyCode();
+
+        return isset($this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_MESSAGE_KEY]) ? $this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_MESSAGE_KEY] : '';
     }
 
     /**

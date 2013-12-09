@@ -13,6 +13,7 @@ namespace Heystack\Subsystem\GiftWrapping\DependencyInjection;
 use Heystack\Subsystem\Core\Loader\DBClosureLoader;
 use Heystack\Subsystem\GiftWrapping\Config\ContainerConfig;
 use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingConfigInterface;
+use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\FileLocator;
@@ -59,7 +60,8 @@ class ContainerExtension implements ExtensionInterface
 
                 foreach ($validatedConfig['config'] as $currencyCodeConfig ) {
 
-                    $priceConfig[$currencyCodeConfig['code']] = $currencyCodeConfig['price'];
+                    $priceConfig[$currencyCodeConfig['code']][GiftWrappingHandlerInterface::CONFIG_PRICE_KEY] = $currencyCodeConfig['price'];
+                    $priceConfig[$currencyCodeConfig['code']][GiftWrappingHandlerInterface::CONFIG_MESSAGE_KEY] = $currencyCodeConfig['message'];
 
                 }
 
@@ -73,7 +75,8 @@ class ContainerExtension implements ExtensionInterface
                 (new DBClosureLoader(
                     function (GiftWrappingConfigInterface $record) use (&$priceConfig) {
 
-                        $priceConfig[$record->getCurrencyCode()] = $record->getPrice();
+                        $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_PRICE_KEY] = $record->getPrice();
+                        $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_MESSAGE_KEY] = $record->getMessage();
 
                     }
                 ))->load($query);

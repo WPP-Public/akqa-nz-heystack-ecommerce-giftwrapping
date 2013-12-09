@@ -9,4 +9,6 @@ interface GiftWrappingConfigInterface
 
     public function getPrice();
 
+    public function getMessage();
+
 }

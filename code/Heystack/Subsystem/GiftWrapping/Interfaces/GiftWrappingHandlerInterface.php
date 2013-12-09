@@ -6,6 +6,9 @@ use Heystack\Subsystem\Ecommerce\Transaction\Interfaces\TransactionModifierInter
 
 interface GiftWrappingHandlerInterface extends TransactionModifierInterface
 {
+    const CONFIG_PRICE_KEY = 'config-price';
+    const CONFIG_MESSAGE_KEY = 'config-message';
+
     public function setActive($active);
 
     public function isActive();
@@ -13,5 +16,7 @@ interface GiftWrappingHandlerInterface extends TransactionModifierInterface
     public function updateTotal();
 
     public function getCost();
+
+    public function getMessage();
 
 }
