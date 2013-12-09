@@ -10,11 +10,15 @@
  */
 namespace Heystack\Subsystem\GiftWrapping\DependencyInjection;
 
+use Heystack\Subsystem\Core\Loader\DBClosureLoader;
+use Heystack\Subsystem\GiftWrapping\Config\ContainerConfig;
+use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingConfigInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Heystack\Subsystem\GiftWrapping\Services;
+use Symfony\Component\Config\Definition\Processor;
 
 /**
  *
@@ -42,24 +46,41 @@ class ContainerExtension implements ExtensionInterface
 
         $loader->load('services.yml');
 
-        $this->processConfig($config, $container);
-    }
+        $validatedConfig = (new Processor())->processConfiguration(
+            new ContainerConfig(),
+            $config
+        );
 
-    /**
-     * {@inheritdoc}
-     *
-     * Adds the configuration for the payment handler.
-     *
-     * @param array                                                   $config
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
-     */
-    protected function processConfig(array $config, ContainerBuilder $container)
-    {
-        $config = array_pop($config);
+        if ( (isset($validatedConfig['config']) || isset($validatedConfig['config_db'])) && $container->hasDefinition(Services::GIFT_WRAPPING_HANDLER) ) {
 
-        if (isset($config['config']) &&  $container->hasDefinition(Services::GIFT_WRAPPING_HANDLER)) {
+            $priceConfig = array();
 
-            $container->getDefinition(Services::GIFT_WRAPPING_HANDLER)->addMethodCall('setConfig', array($config['config']));
+            if( isset($validatedConfig['config']) && count($validatedConfig['config']) ) {
+
+                foreach ($validatedConfig['config'] as $currencyCodeConfig ) {
+
+                    $priceConfig[$currencyCodeConfig['code']] = $currencyCodeConfig['price'];
+
+                }
+
+            } else if ( isset($validatedConfig['config_db']) ) {
+
+                $query = new \SQLQuery(
+                    $validatedConfig['config_db']['select'],
+                    $validatedConfig['config_db']['from'],
+                    $validatedConfig['config_db']['where']
+                );
+                (new DBClosureLoader(
+                    function (GiftWrappingConfigInterface $record) use (&$priceConfig) {
+
+                        $priceConfig[$record->getCurrencyCode()] = $record->getPrice();
+
+                    }
+                ))->load($query);
+
+            }
+
+            $container->getDefinition(Services::GIFT_WRAPPING_HANDLER)->addMethodCall('setConfig', [$priceConfig]);
 
         } else {
             throw new ConfigurationException('Please configure the gift wrapping subsystem on your /mysite/config/services.yml file');

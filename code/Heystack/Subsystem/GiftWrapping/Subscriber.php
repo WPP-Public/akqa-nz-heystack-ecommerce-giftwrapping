@@ -10,20 +10,12 @@
  */
 namespace Heystack\Subsystem\GiftWrapping;
 
+use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
+use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
+use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
-use Heystack\Subsystem\Ecommerce\Locale\Events as LocaleEvents;
-use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
-use Heystack\Subsystem\Products\ProductHolder\Events as ProductHolderEvents;
-use Heystack\Subsystem\Vouchers\Events as VoucherEvents;
-
-use Heystack\Subsystem\Tax\Interfaces\TaxHandlerInterface;
-
-use Heystack\Subsystem\Core\Storage\Storage;
-use Heystack\Subsystem\Core\Storage\Event as StorageEvent;
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
 
 /**
  * Handles both subscribing to events and acting on those events needed for TaxHandler to work properly
@@ -43,15 +35,15 @@ class Subscriber implements EventSubscriberInterface
 
     /**
      * Holds the GiftWrapping Handler
-     * @var \Heystack\Subsystem\GiftWrapping\GiftWrappingHandler
+     * @var \Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface
      */
     protected $giftWrappingHandler;
 
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventService
-     * @param \Heystack\Subsystem\GiftWrapping\GiftWrappingHandler $giftWrappingHandler
+     * @param \Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface $giftWrappingHandler
      */
-    public function __construct(EventDispatcherInterface $eventService, GiftWrappingHandler $giftWrappingHandler)
+    public function __construct(EventDispatcherInterface $eventService, GiftWrappingHandlerInterface $giftWrappingHandler)
     {
         $this->eventService = $eventService;
         $this->giftWrappingHandler = $giftWrappingHandler;

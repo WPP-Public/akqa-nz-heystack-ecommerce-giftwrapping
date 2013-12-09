@@ -6,16 +6,16 @@ use Heystack\Subsystem\Core\Identifier\Identifier;
 use Heystack\Subsystem\Core\Interfaces\HasDataInterface;
 use Heystack\Subsystem\Core\Interfaces\HasStateServiceInterface;
 use Heystack\Subsystem\Core\State\State;
+use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Subsystem\Core\Storage\StorableInterface;
 use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
-use Heystack\Subsystem\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class GiftWrappingHandler implements TransactionModifierInterface, StorableInterface, \Serializable, HasStateServiceInterface, HasDataInterface
+class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInterface, \Serializable, HasStateServiceInterface, HasDataInterface
 {
     use TransactionModifierStateTrait;
     use TransactionModifierSerializeTrait;
