@@ -10,6 +10,7 @@
  */
 namespace Heystack\Subsystem\GiftWrapping\DependencyInjection;
 
+use Heystack\Subsystem\Core\Exception\ConfigurationException;
 use Heystack\Subsystem\Core\Loader\DBClosureLoader;
 use Heystack\Subsystem\GiftWrapping\Config\ContainerConfig;
 use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingConfigInterface;
@@ -66,21 +67,14 @@ class ContainerExtension implements ExtensionInterface
                 }
 
             } else if ( isset($validatedConfig['config_db']) ) {
+                $handler = function (GiftWrappingConfigInterface $record) use (&$priceConfig) {
+                    $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_PRICE_KEY] = $record->getPrice();
+                    $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_MESSAGE_KEY] = $record->getMessage();
+                };
 
-                $query = new \SQLQuery(
-                    $validatedConfig['config_db']['select'],
-                    $validatedConfig['config_db']['from'],
-                    $validatedConfig['config_db']['where']
-                );
-                (new DBClosureLoader(
-                    function (GiftWrappingConfigInterface $record) use (&$priceConfig) {
-
-                        $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_PRICE_KEY] = $record->getPrice();
-                        $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_MESSAGE_KEY] = $record->getMessage();
-
-                    }
-                ))->load($query);
-
+                $resource = call_user_func([$validatedConfig['config_db']['from'], 'get'])->where($validatedConfig['config_db']['where']);
+                
+                (new DBClosureLoader($handler))->load($resource);
             }
 
             $container->getDefinition(Services::GIFT_WRAPPING_HANDLER)->addMethodCall('setConfig', [$priceConfig]);
