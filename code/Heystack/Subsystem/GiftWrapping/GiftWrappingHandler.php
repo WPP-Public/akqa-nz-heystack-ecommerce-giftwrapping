@@ -127,13 +127,13 @@ class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInter
      */
     public function getStorableData()
     {
-        return array(
+        return [
             'id' => 'GiftWrapping',
-            'flat' => array(
+            'flat' => [
                 'Total' => $this->getTotal(),
                 'Active' => $this->isActive()
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -141,9 +141,9 @@ class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInter
      */
     public function getStorableBackendIdentifiers()
     {
-        return array(
+        return [
             Backend::IDENTIFIER
-        );
+        ];
     }
 
     /**

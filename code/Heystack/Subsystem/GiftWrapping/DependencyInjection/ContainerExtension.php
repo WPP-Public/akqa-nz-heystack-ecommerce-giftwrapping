@@ -55,7 +55,7 @@ class ContainerExtension implements ExtensionInterface
 
         if ( (isset($validatedConfig['config']) || isset($validatedConfig['config_db'])) && $container->hasDefinition(Services::GIFT_WRAPPING_HANDLER) ) {
 
-            $priceConfig = array();
+            $priceConfig = [];
 
             if( isset($validatedConfig['config']) && count($validatedConfig['config']) ) {
 
