@@ -8,18 +8,18 @@
 /**
  * GiftWrapping namespace
  */
-namespace Heystack\Subsystem\GiftWrapping\DependencyInjection;
+namespace Heystack\GiftWrapping\DependencyInjection;
 
-use Heystack\Subsystem\Core\Exception\ConfigurationException;
-use Heystack\Subsystem\Core\Loader\DBClosureLoader;
-use Heystack\Subsystem\GiftWrapping\Config\ContainerConfig;
-use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingConfigInterface;
-use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
+use Heystack\Core\Exception\ConfigurationException;
+use Heystack\Core\Loader\DBClosureLoader;
+use Heystack\GiftWrapping\Config\ContainerConfig;
+use Heystack\GiftWrapping\Interfaces\GiftWrappingConfigInterface;
+use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Heystack\Subsystem\GiftWrapping\Services;
+use Heystack\GiftWrapping\Services;
 use Symfony\Component\Config\Definition\Processor;
 
 /**

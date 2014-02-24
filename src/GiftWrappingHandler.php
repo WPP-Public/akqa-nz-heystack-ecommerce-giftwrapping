@@ -1,18 +1,18 @@
 <?php
 
-namespace Heystack\Subsystem\GiftWrapping;
+namespace Heystack\GiftWrapping;
 
-use Heystack\Subsystem\Core\Identifier\Identifier;
-use Heystack\Subsystem\Core\Interfaces\HasDataInterface;
-use Heystack\Subsystem\Core\Interfaces\HasStateServiceInterface;
-use Heystack\Subsystem\Core\State\State;
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
-use Heystack\Subsystem\Core\Storage\StorableInterface;
-use Heystack\Subsystem\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
-use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
-use Heystack\Subsystem\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
-use Heystack\Subsystem\Ecommerce\Transaction\TransactionModifierTypes;
-use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
+use Heystack\Core\Identifier\Identifier;
+use Heystack\Core\Interfaces\HasDataInterface;
+use Heystack\Core\Interfaces\HasStateServiceInterface;
+use Heystack\Core\State\State;
+use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Core\Storage\StorableInterface;
+use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
+use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
+use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
+use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInterface, \Serializable, HasStateServiceInterface, HasDataInterface
@@ -58,7 +58,7 @@ class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInter
 
     /**
      * Returns a unique identifier for use in the Transaction
-     * @return \Heystack\Subsystem\Core\Identifier\Identifier
+     * @return \Heystack\Core\Identifier\Identifier
      */
     public function getIdentifier()
     {

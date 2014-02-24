@@ -1,13 +1,13 @@
 <?php
 
-namespace Heystack\Subsystem\GiftWrapping\Config;
+namespace Heystack\GiftWrapping\Config;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * @author Glenn Bautista <glenn@heyday.co.nz>
- * @package Heystack\Subsystem\Ecommerce\Config
+ * @package Heystack\Ecommerce\Config
  */
 class ContainerConfig implements ConfigurationInterface
 {

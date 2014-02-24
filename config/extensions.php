@@ -1,6 +1,6 @@
 <?php
 
 use Camspiers\DependencyInjection\SharedContainerFactory;
-use Heystack\Subsystem\GiftWrapping\DependencyInjection\ContainerExtension;
+use Heystack\GiftWrapping\DependencyInjection\ContainerExtension;
 
 SharedContainerFactory::addExtension(new ContainerExtension());

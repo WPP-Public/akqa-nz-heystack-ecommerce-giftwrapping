@@ -8,7 +8,7 @@
 /**
  * GiftWrapping namespace
  */
-namespace Heystack\Subsystem\GiftWrapping;
+namespace Heystack\GiftWrapping;
 
 /**
  * Events holds constant references to triggerable dispatch events.

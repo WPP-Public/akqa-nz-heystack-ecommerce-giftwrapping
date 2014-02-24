@@ -8,12 +8,12 @@
 /**
  * Tax namespace
  */
-namespace Heystack\Subsystem\GiftWrapping;
+namespace Heystack\GiftWrapping;
 
-use Heystack\Subsystem\Core\Storage\Backends\SilverStripeOrm\Backend;
-use Heystack\Subsystem\Ecommerce\Currency\Events as CurrencyEvents;
-use Heystack\Subsystem\Ecommerce\Transaction\Events as TransactionEvents;
-use Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
+use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
+use Heystack\Ecommerce\Transaction\Events as TransactionEvents;
+use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -35,13 +35,13 @@ class Subscriber implements EventSubscriberInterface
 
     /**
      * Holds the GiftWrapping Handler
-     * @var \Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface
+     * @var \Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface
      */
     protected $giftWrappingHandler;
 
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventService
-     * @param \Heystack\Subsystem\GiftWrapping\Interfaces\GiftWrappingHandlerInterface $giftWrappingHandler
+     * @param \Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface $giftWrappingHandler
      */
     public function __construct(EventDispatcherInterface $eventService, GiftWrappingHandlerInterface $giftWrappingHandler)
     {

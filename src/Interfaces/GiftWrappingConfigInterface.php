@@ -1,6 +1,6 @@
 <?php
 
-namespace Heystack\Subsystem\GiftWrapping\Interfaces;
+namespace Heystack\GiftWrapping\Interfaces;
 
 
 interface GiftWrappingConfigInterface

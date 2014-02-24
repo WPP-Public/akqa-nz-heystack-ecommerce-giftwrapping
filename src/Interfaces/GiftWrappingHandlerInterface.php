@@ -1,8 +1,8 @@
 <?php
 
-namespace Heystack\Subsystem\GiftWrapping\Interfaces;
+namespace Heystack\GiftWrapping\Interfaces;
 
-use Heystack\Subsystem\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
+use Heystack\Ecommerce\Transaction\Interfaces\TransactionModifierInterface;
 
 interface GiftWrappingHandlerInterface extends TransactionModifierInterface
 {
