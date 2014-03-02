@@ -32,11 +32,7 @@ class GiftWrappingHandler
     const TOTAL_KEY = 'total';
     const ACTIVE_KEY = 'active';
     const CONFIG_KEY = 'config';
-
-    /**
-     * @var State
-     */
-    protected $stateService;
+    
     protected $eventService;
     protected $currencyService;
     protected $data;
