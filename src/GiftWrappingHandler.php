@@ -8,6 +8,7 @@ use Heystack\Core\Interfaces\HasStateServiceInterface;
 use Heystack\Core\State\State;
 use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Core\Storage\StorableInterface;
+use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
@@ -15,8 +16,15 @@ use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInterface, \Serializable, HasStateServiceInterface, HasDataInterface
+class GiftWrappingHandler
+    implements
+        GiftWrappingHandlerInterface,
+        StorableInterface,
+        \Serializable,
+        HasStateServiceInterface,
+        HasDataInterface
 {
+    use HasStateServiceTrait;
     use TransactionModifierStateTrait;
     use TransactionModifierSerializeTrait;
 
@@ -34,8 +42,9 @@ class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInter
     protected $data;
 
     /**
-     * @param $total
      * @param State $stateService
+     * @param EventDispatcherInterface $eventService
+     * @param CurrencyServiceInterface $currencyService
      */
     public function __construct(State $stateService, EventDispatcherInterface $eventService, CurrencyServiceInterface $currencyService)
     {
@@ -168,20 +177,6 @@ class GiftWrappingHandler implements GiftWrappingHandlerInterface, StorableInter
     public function getData()
     {
         return $this->data;
-    }
-
-    /**
-     * @param HasStateServiceInterface $eventService
-     * @return mixed
-     */
-    public function setStateService(State $stateService)
-    {
-        $this->stateService = $stateService;
-    }
-
-    public function getStateService()
-    {
-        return $this->stateService;
     }
 
     public function setConfig(array $config)
