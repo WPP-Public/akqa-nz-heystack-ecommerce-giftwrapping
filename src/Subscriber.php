@@ -10,7 +10,10 @@
  */
 namespace Heystack\GiftWrapping;
 
+use Heystack\Core\State\State;
 use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
+use Heystack\Core\Traits\HasEventServiceTrait;
+use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Ecommerce\Currency\Events as CurrencyEvents;
 use Heystack\Ecommerce\Transaction\Events as TransactionEvents;
 use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
@@ -27,11 +30,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class Subscriber implements EventSubscriberInterface
 {
-    /**
-     * Holds the Event Dispatcher Service
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    protected $eventService;
+    use HasStateServiceTrait;
+    use HasEventServiceTrait;
 
     /**
      * Holds the GiftWrapping Handler
@@ -42,11 +42,17 @@ class Subscriber implements EventSubscriberInterface
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventService
      * @param \Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface $giftWrappingHandler
+     * @param \Heystack\Core\State\State $stateService
      */
-    public function __construct(EventDispatcherInterface $eventService, GiftWrappingHandlerInterface $giftWrappingHandler)
+    public function __construct(
+        EventDispatcherInterface $eventService,
+        GiftWrappingHandlerInterface $giftWrappingHandler,
+        State $stateService
+    )
     {
         $this->eventService = $eventService;
         $this->giftWrappingHandler = $giftWrappingHandler;
+        $this->stateService = $stateService;
     }
 
     /**
@@ -57,7 +63,8 @@ class Subscriber implements EventSubscriberInterface
     {
         return [
             CurrencyEvents::CHANGED        => ['onUpdateTotal', 0],
-            Events::TOTAL_UPDATED          => ['onTotalUpdated', 0]
+            Events::TOTAL_UPDATED          => ['onTotalUpdated', 0],
+            Backend::IDENTIFIER . '.' . TransactionEvents::STORED => ['onTransactionStored', 0]
         ];
     }
 
@@ -78,5 +85,11 @@ class Subscriber implements EventSubscriberInterface
         $this->eventService->dispatch(TransactionEvents::UPDATE);
     }
 
-
+    /**
+     * Remove the required state
+     */
+    public function onTransactionStored()
+    {
+        $this->stateService->removeByKey(GiftWrappingHandler::IDENTIFIER);
+    }
 }

@@ -4,15 +4,14 @@ services:
   gift_wrapping_handler:
     class: Heystack\GiftWrapping\GiftWrappingHandler
     arguments: [ @state, @event_dispatcher, @currency_service ]
-    calls:
-      - [ restoreState ]
     tags:
-      - { name: ss_orm_backend.data_provider }
+      - { name: ss_orm_backend.reference_data_provider }
       - { name: transaction.modifier }
+      - { name: state.restore }
 
   gift_wrapping_subsriber:
     class: Heystack\GiftWrapping\Subscriber
-    arguments: [ @event_dispatcher, @gift_wrapping_handler ]
+    arguments: [ @event_dispatcher, @gift_wrapping_handler, @state ]
     tags:
       - { name: event_dispatcher.subscriber }
       

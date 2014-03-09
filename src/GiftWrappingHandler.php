@@ -3,62 +3,97 @@
 namespace Heystack\GiftWrapping;
 
 use Heystack\Core\Identifier\Identifier;
-use Heystack\Core\Interfaces\HasDataInterface;
+use Heystack\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Core\Interfaces\HasStateServiceInterface;
 use Heystack\Core\State\State;
+use Heystack\Core\State\StateableInterface;
 use Heystack\Core\Storage\Backends\SilverStripeOrm\Backend;
 use Heystack\Core\Storage\StorableInterface;
+use Heystack\Core\Traits\HasEventServiceTrait;
 use Heystack\Core\Traits\HasStateServiceTrait;
 use Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface;
+use Heystack\Ecommerce\Currency\Interfaces\HasCurrencyServiceInterface;
+use Heystack\Ecommerce\Currency\Traits\HasCurrencyServiceTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierSerializeTrait;
 use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
+use SebastianBergmann\Money\Money;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * Class GiftWrappingHandler
+ * @package Heystack\GiftWrapping
+ */
 class GiftWrappingHandler
     implements
         GiftWrappingHandlerInterface,
         StorableInterface,
         \Serializable,
         HasStateServiceInterface,
-        HasDataInterface
+        HasCurrencyServiceInterface,
+        HasEventServiceInterface,
+        StateableInterface
 {
     use HasStateServiceTrait;
-    use TransactionModifierStateTrait;
+    use HasCurrencyServiceTrait;
+    use HasEventServiceTrait;
     use TransactionModifierSerializeTrait;
 
-    const IDENTIFIER = 'gift-wrapping-handler';
-    const TOTAL_KEY = 'total';
-    const ACTIVE_KEY = 'active';
-    const CONFIG_KEY = 'config';
-    
-    protected $eventService;
-    protected $currencyService;
-    protected $data;
+    /**
+     *
+     */
+    const IDENTIFIER = 'GiftWrapping';
+
+    /**
+     * @var \SebastianBergmann\Money\Money
+     */
+    protected $total;
+
+    /**
+     * @var bool
+     */
+    protected $active = false;
+
+    /**
+     * @var array|null
+     */
+    protected $config;
 
     /**
      * @param State $stateService
      * @param EventDispatcherInterface $eventService
      * @param CurrencyServiceInterface $currencyService
      */
-    public function __construct(State $stateService, EventDispatcherInterface $eventService, CurrencyServiceInterface $currencyService)
+    public function __construct(
+        State $stateService,
+        EventDispatcherInterface $eventService,
+        CurrencyServiceInterface $currencyService
+    )
     {
         $this->stateService = $stateService;
         $this->eventService = $eventService;
         $this->currencyService = $currencyService;
+        $this->total = $this->currencyService->getZeroMoney();
     }
 
+    /**
+     * @param bool $active
+     * @return void
+     */
     public function setActive($active)
     {
-        $this->data[self::ACTIVE_KEY] = (bool) $active;
+        $this->active = $active;
 
         $this->updateTotal();
     }
 
+    /**
+     * @return bool
+     */
     public function isActive()
     {
-        return isset($this->data[self::ACTIVE_KEY]) ? $this->data[self::ACTIVE_KEY] : false;
+        return $this->active;
     }
 
     /**
@@ -75,39 +110,53 @@ class GiftWrappingHandler
      */
     public function getTotal()
     {
-        return isset($this->data[self::TOTAL_KEY]) ? $this->data[self::TOTAL_KEY] : 0;
+        return $this->total;
     }
 
+    /**
+     *
+     */
     public function updateTotal()
     {
-        $total = 0;
-
         if ($this->isActive()) {
-
-            $total = $this->getCost();
-
+            $this->total = $this->getCost();
+        } else {
+            $this->total = $this->currencyService->getZeroMoney();
         }
 
-        $this->data[self::TOTAL_KEY] = $total;
-
         $this->saveState();
-
+        
         $this->eventService->dispatch(Events::TOTAL_UPDATED);
-
     }
 
+    /**
+     * @return Money
+     */
     public function getCost()
     {
-        $currencyCode = $this->currencyService->getActiveCurrencyCode();
+        $currency = $this->currencyService->getActiveCurrency();
+        $currencyCode = $currency->getCurrencyCode();
 
-        return isset($this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_PRICE_KEY]) ? $this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_PRICE_KEY] : 0;
+        if ($this->config && isset($this->config[$currencyCode][self::CONFIG_PRICE_KEY])) {
+            return new Money($this->config[$currencyCode][self::CONFIG_PRICE_KEY] * $currency->getSubUnit(), $currency);
+        } else {
+            return $this->currencyService->getZeroMoney();
+        }
     }
 
+    /**
+     * @return string
+     */
     public function getMessage()
     {
-        $currencyCode = $this->currencyService->getActiveCurrencyCode();
-
-        return isset($this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_MESSAGE_KEY]) ? $this->data[self::CONFIG_KEY][$currencyCode][self::CONFIG_MESSAGE_KEY] : '';
+        $currency = $this->currencyService->getActiveCurrency();
+        $currencyCode = $currency->getCurrencyCode();
+        
+        if (isset($this->config[$currencyCode][self::CONFIG_MESSAGE_KEY])) {
+            return $this->config[$currencyCode][self::CONFIG_MESSAGE_KEY];
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -133,9 +182,9 @@ class GiftWrappingHandler
     public function getStorableData()
     {
         return [
-            'id' => 'GiftWrapping',
+            'id' => self::IDENTIFIER,
             'flat' => [
-                'Total' => $this->getTotal(),
+                'Total' => $this->total->getAmount(),
                 'Active' => $this->isActive()
             ]
         ];
@@ -160,30 +209,59 @@ class GiftWrappingHandler
     }
 
     /**
-     * @param array $data
+     * @param array $config
      */
-    public function setData($data)
+    public function setConfig(array $config)
     {
-        $this->data = $data;
+        $this->config = $config;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function saveState()
+    {
+        $this->stateService->setByKey(
+            self::IDENTIFIER,
+            $this->getData()
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function restoreState()
+    {
+        $this->setData($this->stateService->getByKey(self::IDENTIFIER));
     }
 
     /**
      * @return array
      */
-    public function getData()
+    protected function getData()
     {
-        return $this->data;
+        return [
+            $this->active,
+            $this->total,
+            $this->config
+        ];
     }
 
-    public function setConfig(array $config)
+    /**
+     * @param $data
+     */
+    protected function setData($data)
     {
-        $this->data[self::CONFIG_KEY] = $config;
+        if (is_array($data)) {
+            list($this->active, $this->total, $this->config) = $data;
+        }
     }
-
-    public function getConfig()
-    {
-        return isset($this->data[self::CONFIG_KEY]) ? $this->data[self::CONFIG_KEY] : null;
-    }
-
-
 }

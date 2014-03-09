@@ -30,14 +30,12 @@ use Symfony\Component\Config\Definition\Processor;
  */
 class ContainerExtension implements ExtensionInterface
 {
-
     /**
      * Loads a services.yml file into a fresh container, ready to me merged
      * back into the main container
-     *
-     * @param  array            $config
-     * @param  ContainerBuilder $container
-     * @return null
+     * @param array $config
+     * @param ContainerBuilder $container
+     * @throws \Heystack\Core\Exception\ConfigurationException
      */
     public function load(array $config, ContainerBuilder $container)
     {
@@ -86,7 +84,7 @@ class ContainerExtension implements ExtensionInterface
 
     /**
      * Returns the namespace of the container extension
-     * @return type
+     * @return string
      */
     public function getNamespace()
     {
@@ -104,7 +102,7 @@ class ContainerExtension implements ExtensionInterface
 
     /**
      * Returns the container extensions alias
-     * @return type
+     * @return string
      */
     public function getAlias()
     {
