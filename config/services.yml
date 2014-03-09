@@ -17,13 +17,15 @@ services:
       
   gift_wrapping_transaction_schema:
     class: %yaml_data_object_schema.class%
-    arguments: [ ecommerce-giftwrapping/config/storage/gift_wrapping_transaction.yml, @state_global ]
+    arguments: [ ecommerce-giftwrapping/config/storage/gift_wrapping_transaction.yml ]
     tags:
-      - { name: dataobject_generator.schema }
+      - { name: schema }
+      - { name: autoinject, arguments: true }
       
   gift_wrapping_schema:
     class: %yaml_data_object_schema.class%
-    arguments: [ ecommerce-giftwrapping/config/storage/gift_wrapping.yml, @state_global ]
+    arguments: [ ecommerce-giftwrapping/config/storage/gift_wrapping.yml ]
     tags:
-      - { name: dataobject_generator.schema, reference: true }
+      - { name: schema, reference: true }
+      - { name: autoinject, arguments: true }
       
