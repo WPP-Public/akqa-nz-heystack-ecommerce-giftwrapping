@@ -138,7 +138,10 @@ class GiftWrappingHandler
         $currencyCode = $currency->getCurrencyCode();
 
         if ($this->config && isset($this->config[$currencyCode][self::CONFIG_PRICE_KEY])) {
-            return new Money($this->config[$currencyCode][self::CONFIG_PRICE_KEY] * $currency->getSubUnit(), $currency);
+            return new Money(
+                intval($this->config[$currencyCode][self::CONFIG_PRICE_KEY] * $currency->getSubUnit()),
+                $currency
+            );
         } else {
             return $this->currencyService->getZeroMoney();
         }
