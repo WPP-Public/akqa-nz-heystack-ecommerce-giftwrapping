@@ -249,7 +249,7 @@ class GiftWrappingHandler
     /**
      * @return array
      */
-    protected function getData()
+    public function getData()
     {
         return [
             $this->active,
@@ -261,7 +261,7 @@ class GiftWrappingHandler
     /**
      * @param $data
      */
-    protected function setData($data)
+    public function setData($data)
     {
         if (is_array($data)) {
             list($this->active, $this->total, $this->config) = $data;
