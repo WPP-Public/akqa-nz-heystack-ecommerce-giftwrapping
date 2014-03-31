@@ -1,13 +1,5 @@
 <?php
-/**
- * This file is part of the Ecommerce-GiftWrapping package
- *
- * @package Ecommerce-GiftWrapping
- */
 
-/**
- * Tax namespace
- */
 namespace Heystack\GiftWrapping;
 
 use Heystack\Core\State\State;

@@ -15,12 +15,12 @@ use Heystack\Core\Loader\DBClosureLoader;
 use Heystack\GiftWrapping\Config\ContainerConfig;
 use Heystack\GiftWrapping\Interfaces\GiftWrappingConfigInterface;
 use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Heystack\GiftWrapping\Services;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
  *
