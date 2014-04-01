@@ -65,7 +65,7 @@ class Subscriber implements EventSubscriberInterface
     /**
      * Called to update the GiftWrappingHandler's total
      */
-    public function onUpdateTotal()
+    public function onCurrencyChanged()
     {
         $this->currencyChanging = true;
         $this->giftWrappingHandler->updateTotal();
