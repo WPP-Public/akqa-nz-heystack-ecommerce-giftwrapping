@@ -30,6 +30,8 @@ class Subscriber implements EventSubscriberInterface
      * @var \Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface
      */
     protected $giftWrappingHandler;
+    
+    protected $currencyChanging;
 
     /**
      * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventService
@@ -54,9 +56,9 @@ class Subscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CurrencyEvents::CHANGED        => ['onUpdateTotal', 0],
-            Events::TOTAL_UPDATED          => ['onTotalUpdated', 0],
-            Backend::IDENTIFIER . '.' . TransactionEvents::STORED => ['onTransactionStored', 0]
+            Events::TOTAL_UPDATED                                            => ['onTotalUpdated', 0],
+            CurrencyEvents::CHANGED                                          => ['onCurrencyChanged', 0],
+            sprintf('%s.%s', Backend::IDENTIFIER, TransactionEvents::STORED) => ['onTransactionStored', 0]
         ];
     }
 
@@ -65,7 +67,9 @@ class Subscriber implements EventSubscriberInterface
      */
     public function onUpdateTotal()
     {
+        $this->currencyChanging = true;
         $this->giftWrappingHandler->updateTotal();
+        $this->currencyChanging = false;
     }
 
     /**
@@ -74,7 +78,9 @@ class Subscriber implements EventSubscriberInterface
      */
     public function onTotalUpdated()
     {
-        $this->eventService->dispatch(TransactionEvents::UPDATE);
+        if (!$this->currencyChanging) {
+            $this->eventService->dispatch(TransactionEvents::UPDATE);
+        }
     }
 
     /**
