@@ -187,7 +187,7 @@ class GiftWrappingHandler
         return [
             'id' => self::IDENTIFIER,
             'flat' => [
-                'Total' => $this->total->getAmount(),
+                'Total' => $this->total->getAmount() / $this->total->getCurrency()->getSubUnit(),
                 'Active' => $this->isActive()
             ]
         ];
