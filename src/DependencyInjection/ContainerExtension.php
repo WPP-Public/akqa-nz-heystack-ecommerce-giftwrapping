@@ -70,9 +70,11 @@ class ContainerExtension implements ExtensionInterface
                     $priceConfig[$record->getCurrencyCode()][GiftWrappingHandlerInterface::CONFIG_MESSAGE_KEY] = $record->getMessage();
                 };
 
-                $resource = call_user_func([$validatedConfig['config_db']['from'], 'get'])->where($validatedConfig['config_db']['where']);
-                
-                (new DBClosureLoader($handler))->load($resource);
+                (new DBClosureLoader($handler))->load([
+                    $validatedConfig['config_db']['select'],
+                    $validatedConfig['config_db']['from'],
+                    $validatedConfig['config_db']['where']
+                ]);
             }
 
             $container->getDefinition(Services::GIFT_WRAPPING_HANDLER)->addMethodCall('setConfig', [$priceConfig]);
