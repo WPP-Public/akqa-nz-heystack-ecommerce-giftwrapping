@@ -138,10 +138,7 @@ class GiftWrappingHandler
         $currencyCode = $currency->getCurrencyCode();
 
         if ($this->config && isset($this->config[$currencyCode][self::CONFIG_PRICE_KEY])) {
-            return new Money(
-                intval($this->config[$currencyCode][self::CONFIG_PRICE_KEY] * $currency->getSubUnit()),
-                $currency
-            );
+            return \Heystack\Ecommerce\convertStringToMoney($this->config[$currencyCode][self::CONFIG_PRICE_KEY], $currency);
         } else {
             return $this->currencyService->getZeroMoney();
         }
@@ -187,7 +184,7 @@ class GiftWrappingHandler
         return [
             'id' => self::IDENTIFIER,
             'flat' => [
-                'Total' => $this->total->getAmount() / $this->total->getCurrency()->getSubUnit(),
+                'Total' => \Heystack\Ecommerce\convertMoneyToString($this->total),
                 'Active' => $this->isActive()
             ]
         ];
