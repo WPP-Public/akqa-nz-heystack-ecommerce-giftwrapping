@@ -17,6 +17,7 @@ trait HasGiftWrappingHandlerTrait
 
     /**
      * @param \Heystack\GiftWrapping\GiftWrappingHandler $giftWrappingHandler
+     * @return void
      */
     public function setGiftWrappingHandler(GiftWrappingHandler $giftWrappingHandler)
     {

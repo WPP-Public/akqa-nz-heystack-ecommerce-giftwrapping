@@ -36,6 +36,7 @@ class ContainerExtension implements ExtensionInterface
      * @param array $config
      * @param ContainerBuilder $container
      * @throws \Heystack\Core\Exception\ConfigurationException
+     * @return void
      */
     public function load(array $config, ContainerBuilder $container)
     {

@@ -20,13 +20,13 @@ interface GiftWrappingHandlerInterface extends TransactionModifierInterface
     const CONFIG_MESSAGE_KEY = 'config-message';
 
     /**
-     * @param $active
-     * @return mixed
+     * @param bool $active
+     * @return void
      */
     public function setActive($active);
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function isActive();
 
@@ -36,12 +36,12 @@ interface GiftWrappingHandlerInterface extends TransactionModifierInterface
     public function updateTotal();
 
     /**
-     * @return mixed
+     * @return \SebastianBergmann\Money\Money
      */
     public function getCost();
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getMessage();
 }

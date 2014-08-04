@@ -2,6 +2,7 @@
 
 namespace Heystack\GiftWrapping;
 
+use Heystack\Core\EventDispatcher;
 use Heystack\Core\Identifier\Identifier;
 use Heystack\Core\Interfaces\HasEventServiceInterface;
 use Heystack\Core\Interfaces\HasStateServiceInterface;
@@ -19,7 +20,6 @@ use Heystack\Ecommerce\Transaction\Traits\TransactionModifierStateTrait;
 use Heystack\Ecommerce\Transaction\TransactionModifierTypes;
 use Heystack\GiftWrapping\Interfaces\GiftWrappingHandlerInterface;
 use SebastianBergmann\Money\Money;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class GiftWrappingHandler
@@ -61,13 +61,13 @@ class GiftWrappingHandler
     protected $config;
 
     /**
-     * @param State $stateService
-     * @param EventDispatcherInterface $eventService
-     * @param CurrencyServiceInterface $currencyService
+     * @param \Heystack\Core\State\State $stateService
+     * @param \Heystack\Core\EventDispatcher $eventService
+     * @param \Heystack\Ecommerce\Currency\Interfaces\CurrencyServiceInterface $currencyService
      */
     public function __construct(
         State $stateService,
-        EventDispatcherInterface $eventService,
+        EventDispatcher $eventService,
         CurrencyServiceInterface $currencyService
     )
     {
@@ -107,6 +107,7 @@ class GiftWrappingHandler
 
     /**
      * Returns the total value of the TransactionModifier for use in the Transaction
+     * @return \SebastianBergmann\Money\Money
      */
     public function getTotal()
     {
@@ -114,7 +115,7 @@ class GiftWrappingHandler
     }
 
     /**
-     *
+     * @return void
      */
     public function updateTotal()
     {
@@ -130,7 +131,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return Money
+     * @return \SebastianBergmann\Money\Money
      */
     public function getCost()
     {
@@ -162,6 +163,7 @@ class GiftWrappingHandler
     /**
      * Indicates the type of amount the modifier will return
      * Must return a constant from TransactionModifierTypes
+     * @return string
      */
     public function getType()
     {
@@ -169,7 +171,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getStorableIdentifier()
     {
@@ -177,7 +179,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getStorableData()
     {
@@ -191,7 +193,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getStorableBackendIdentifiers()
     {
@@ -201,7 +203,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSchemaName()
     {
@@ -210,6 +212,7 @@ class GiftWrappingHandler
 
     /**
      * @param array $config
+     * @return void
      */
     public function setConfig(array $config)
     {
@@ -225,7 +228,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return mixed
+     * @return void
      */
     public function saveState()
     {
@@ -236,7 +239,7 @@ class GiftWrappingHandler
     }
 
     /**
-     * @return mixed
+     * @return void
      */
     public function restoreState()
     {
@@ -256,7 +259,8 @@ class GiftWrappingHandler
     }
 
     /**
-     * @param $data
+     * @param mixed $data
+     * @return void
      */
     public function setData($data)
     {
