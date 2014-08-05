@@ -13,7 +13,7 @@ interface GiftWrappingConfigInterface
     public function getCurrencyCode();
 
     /**
-     * @return \SebastianBergmann\Money\Money
+     * @return float|string
      */
     public function getPrice();
 
